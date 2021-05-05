@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: <% .Name %>
+spec:
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: <% .Name %>
+  template:
+    spec:
+      containers:
+        - name: <% .Name %>
+          image: fake-image
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 0.1
+          ports:
+            - containerPort: <% index .Params `containerPort` %>
+              name: http
+          envFrom:
+          - configMapRef:
+              name: <% .Name %>-config
+

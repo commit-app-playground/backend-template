@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- deployment.yml
+- service.yml
+- ingress.yml
+
+configMapGenerator:
+- name: <% .Name %>-config
+  literals:
+    - MY_ENV_VAR_1=foo
+    - MY_ENV_VAR_2=bar
+
+commonLabels:
+  app: <% .Name %>

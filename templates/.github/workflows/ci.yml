@@ -1,0 +1,106 @@
+# CI pipeline
+# This runs against all the commits landed on master
+# It will do the following things:
+# - run sanity tests against the checked-out code
+# - build an image and upload the docker image to ECR
+# - deploy to staging environment
+# - run smoke test against staging enviroment
+# - deploy to production
+name: CI Pipeline
+on:
+  push:
+    branches: [master,main]
+env:
+  # Environment variables shared across jobs and doesn't change per environment
+  region: ${{ secrets.AWS_DEFAULT_REGION }}
+  accountId: ${{ secrets.AWS_ACCOUNT_ID }}
+  repo: python-app
+  cluster-name: ${{ secrets.EKS_CLUSTER_NAME }}
+jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run Unit Tests
+      run: |
+        echo "FIXME: Add unit tests"
+
+  build:
+      needs: unit-test
+      runs-on: ubuntu-latest
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      steps:
+        - uses: actions/checkout@v2
+        - name: Set IMAGE_TAG as env
+          run: |
+            APP_NAME=$(echo "${{ github.repository }}" | sed -e 's/.*\///g')
+            IMAGE_TAG=${APP_NAME}-$(git rev-parse --short=7 ${{ github.sha }})
+            echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_ENV
+        - if: env.AWS_ACCESS_KEY_ID == null
+          run: |
+            echo "AWS Credentials not found, This is expected for the first run as the repo is provisioned then secrets are injected at a later step."
+            exit 1
+        - name: Configure AWS credentials
+          uses: aws-actions/configure-aws-credentials@v1
+          with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-region: ${{ env.region }}
+        - name: Login to Amazon ECR
+          id: login-ecr
+          uses: aws-actions/amazon-ecr-login@v1
+        - name: Build and push
+          id: docker_build
+          uses: docker/build-push-action@v2
+          with:
+            push: true
+            tags: ${{ env.accountId }}.dkr.ecr.${{ env.region }}.amazonaws.com/${{ env.repo }}:${{ env.IMAGE_TAG }}
+
+  deploy:
+      needs: build
+      runs-on: ubuntu-latest
+      env:
+        environment-overlay: staging
+        cluster-authentication-role-arn: "arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.EKS_DEPLOYER_ROLE_NAME }}"
+      steps:
+        - uses: actions/checkout@v2
+        - name: Set IMAGE_TAG as env
+          run: |
+            APP_NAME=$(echo "${{ github.repository }}" | sed -e 's/.*\///g')
+            IMAGE_TAG=${APP_NAME}-$(git rev-parse --short=7 ${{ github.sha }})
+            echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_ENV
+        - name: Set APP_NAME and NAMESPACE as env
+          run: |
+            NAMESPACE=$(echo "${{ github.repository }}" | sed -e 's/.*\///g')
+            echo "NAMESPACE=${NAMESPACE}" >> $GITHUB_ENV
+            APP_NAME=$(echo "${{ github.repository }}" | sed -e 's/.*\///g')
+            echo "APP_NAME=${APP_NAME}" >> $GITHUB_ENV
+        - name: Install kubectl
+          uses: azure/setup-kubectl@v1
+        - name: Configure AWS credentials
+          uses: aws-actions/configure-aws-credentials@v1
+          with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-region: ${{ env.region }}
+        - name: Setup binaries(aws-cli/kustomize/iam-authenticator)
+          uses: ./.github/actions/setup-aws-kustomize
+          with:
+            cluster-authentication-role-arn: ${{ env.cluster-authentication-role-arn }}
+            cluster-name: ${{ env.cluster-name }}
+            region: ${{ env.region }}
+        - name: Check Namespace
+          run: |
+            DEPLOYMENT=${{ env.repo }}
+            kubectl create namespace ${{ env.NAMESPACE }} || echo "Namespace already exists"
+        - name: Deploy image
+          uses: ./.github/actions/deploy
+          with:
+            namespace: ${{ env.NAMESPACE }}
+            ecr-repository-name: ${{ secrets.ECR_REPOSITORY }}
+            app-name: ${{ env.APP_NAME }}
+            image-tag: ${{ env.IMAGE_TAG }}
+            docker-host: ${{ env.accountId }}.dkr.ecr.${{ env.region }}.amazonaws.com
+            region: ${{ env.region }}
+            environment-overlay: ${{ env.environment-overlay }}

@@ -1,0 +1,27 @@
+# ------------------------
+# IMPORTANT:
+# Committing a change with this file will trigger Github actions 
+# to template and rewrite the repository
+# ------------------------
+#
+# Fill in name of your App
+# this becomes the deployment/namespace/svc name in kubernetes
+# must be lowercase alpha-numeric with dashes only
+name: 
+
+shouldPushRepositories: false
+
+modules:
+  templates:
+    files:
+      dir: output
+      source: .
+    parameters:
+      # ------------------------
+      # DO NOT CHANGE
+      # should be fixed based on the AWS account youre using
+      ecrRepo: onboarding
+      domain: onboarding.dev
+      # ------------------------
+      # App settings
+      containerPort: 80

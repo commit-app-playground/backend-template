@@ -1,0 +1,12 @@
+name: templates
+description: for templating purposes only
+author: 'Commit'
+zeroVersion: '>= 0.0.4'
+
+template:
+  strictMode: true
+  delimiters:
+    - '<%'
+    - '%>'
+  inputDir: 'templates'
+  outputDir: 'output'
