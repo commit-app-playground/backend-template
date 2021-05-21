@@ -37,7 +37,7 @@ jobs:
 
       - name: Check name is valid [lowercase alpha-numeric and dashes]
         run: |
-          cat zero-project.yml | grep -Eo "^name:(\s|\t)+([a-z]|\d|-)+$" || echo "Invalid name [lowercase alpha-numeric and dashes] only" >&2; exit 1
+          cat zero-project.yml | grep -P "^name:[\s\t]+[a-z-0-9]+$" || (echo "Invalid name [lowercase alpha-numeric and dashes] only" >&2; exit 1)
       - uses: actions/setup-python@v2
         with:
           python-version: '3.x'
