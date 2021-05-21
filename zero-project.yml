@@ -25,3 +25,4 @@ modules:
       # ------------------------
       # App settings
       containerPort: 80
+      corsAllowOrigin: # https://<my-frontend-url>
