@@ -14,7 +14,7 @@ env:
   # Environment variables shared across jobs and doesn't change per environment
   region: ${{ secrets.AWS_DEFAULT_REGION }}
   accountId: ${{ secrets.AWS_ACCOUNT_ID }}
-  repo: python-app
+  repo: ${{ secrets.ECR_REPOSITORY }}
   cluster-name: ${{ secrets.EKS_CLUSTER_NAME }}
 jobs:
   unit-test:

@@ -89,4 +89,4 @@ jobs:
           git checkout --orphan temp-branch && \
           git add . && \
           git commit -m 'Initial commit' && \
-          git push origin temp-branch:master -f
+          git push origin temp-branch:main -f
