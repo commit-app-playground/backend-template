@@ -1,7 +1,8 @@
 # ------------------------
 # IMPORTANT:
-# Committing a change with this file will trigger Github actions 
-# to template and rewrite the repository
+# Committing a change with this file will trigger Github actions
+# to template and rewrite the repository, you will no longer see this file
+# Instead your repository will be your own example project!
 # ------------------------
 #
 # Fill in name of your App
