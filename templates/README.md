@@ -1,29 +1,36 @@
 #  <% .Name %> Backend service
 
 # Getting Started
-### Essentials steps to get your backend server deployed
-A helloworld example has been shipped with the template to show the bare minimum setup, server that listens on the configured port and a dockerfile. (`main.py`, `requirements.txt`, `Dockerfile`)
-- Webserver that listens on a port <% index .Params `containerPort` %>
+### Essential steps to get your backend service deployed
+A helloworld example has been shipped with the template to show the bare minimum setup - a server that listens on the configured port, a dockerfile, and some kubernetes manifests. (`main.py`, `requirements.txt`, `Dockerfile`, `kubernetes/`)
+- Webserver that listens on port <% index .Params `containerPort` %>
 - Dockerfile builds and serves on port <% index .Params `containerPort` %>
 
 
 # Deployment
-### Things that happened behind the scene
-- The Github-Org has been configured with secrets that has access to deploy to the Onboarding cluster
+### Things that happened behind the scenes
+- The Github Org has already been configured with secrets that allow this project to deploy to the Onboarding cluster
 - CI/CD will run in Github actions to deploy your application
-- It will build an image and push to ECR repository
-- it will creates an ingress, service and deployment in Kubernetes cluster using kustomize during the CI pipeline
-- It will update deployment image to use the most recent built Image
+- It will build an image and push to ECR (Elastic Container Registry)
+- it will create an ingress, service, and deployment in the Kubernetes cluster using kustomize during the CI pipeline
+- It will update the deployment to use the newly built docker image
+
+# Your local environment
+To set up your local environment with access to AWS and Kubernetes, just run:
+```
+./scripts/setup-env.sh
+```
+This script will open a web browser and prompt you to log in with your Commit Gmail account, and then will configure an AWS profile and a Kubernetes context.
 
 # Structure
 ## Kubernetes
-The setup of kubernetes uses kustomize and is ran during theCI pipeline, it is setup in the [`/kubernetes`](./kubernetes/deploy/) folder
-Your application is deployed on your EKS cluster through CI pipeline, you can see the pod status on kubernetes in your application namespace:
+The configuration of your application in Kubernetes uses [https://kustomize.io/](kustomize) and is run by the CI pipeline, the configuration is in the [`/kubernetes`](./kubernetes/deploy/) directory.
+Once the CI pipeline is finished, you can see the pod status on kubernetes in your application namespace:
 ```
 kubectl -n <% .Name %> get pods
 ```
 ### Configuring
-You can update the resource limits in the [kubernetes/deploy/deployment.yml][deployment], and control fine-grain customizations based on environment and specific deployments such as Scaling out replicas and environment variables. And the [ingress] and [service] are also setup during the CI pipeline using Kustomize to setup the api on the infrastructure.
+You can update the configuration of the [deployment] and adjust things like increasing the number of replicas and adding new environment variables in the [kustomization] file. The [ingress] and [service] control routing traffic to your application.
 
 ## Github actions
 Your repository comes with a end-to-end CI/CD pipeline, which includes the following steps:
@@ -31,10 +38,10 @@ Your repository comes with a end-to-end CI/CD pipeline, which includes the follo
 2. Unit Tests
 3. Build Image
 4. Upload Image to ECR
-4. Deploy image cluster
+4. Deploy image to cluster
 
 <!-- Links -->
 [deployment]: ./kubernetes/deploy/deployment.yml
 [service]: ./kubernetes/deploy/service.yml
 [ingress]: ./kubernetes/deploy/ingress.yml
-[circleci-details]: ./.circleci/README.md
+[kustomization]: ./kubernetes/deploy/kustomization.yml

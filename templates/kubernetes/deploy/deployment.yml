@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   name: <% .Name %>
 spec:
+  replicas: 1
   revisionHistoryLimit: 5
   selector:
     matchLabels:
@@ -16,9 +17,19 @@ spec:
             requests:
               memory: 128Mi
               cpu: 0.1
+            limits:
+              memory: 256Mi
+              cpu: 0.5
           ports:
             - containerPort: <% index .Params `containerPort` %>
               name: http
           envFrom:
           - configMapRef:
               name: <% .Name %>-config
+          readinessProbe:
+            httpGet:
+              port: http
+              path: /
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 2

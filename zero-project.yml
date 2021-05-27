@@ -5,10 +5,10 @@
 # Instead your repository will be your own example project!
 # ------------------------
 #
-# Fill in name of your App
-# this becomes the deployment/namespace/svc name in kubernetes
-# must be lowercase alpha-numeric with dashes only
-name: 
+# Fill in the name of your app - this becomes the deployment/namespace/svc name in kubernetes.
+# Must be lowercase alphanumeric with dashes only and must be unique within the cluster.
+# Using the same name as this repository is probably a good idea.
+name:
 
 shouldPushRepositories: false
 
@@ -26,4 +26,5 @@ modules:
       # ------------------------
       # App settings
       containerPort: 80
-      corsAllowOrigin: # https://<my-frontend-url>
+      # Change this to 'static' if you will be using a static frontend
+      frontendSubdomain: spa
