@@ -28,7 +28,7 @@ modules:
       containerPort: 80
       # Change this to 'static' if you will be using a static frontend
       frontendSubdomain: spa
-      # Current supported language are [python, nodejs, golang]
+      # Currently supported languages are [python, nodejs, golang]
       language: python
     # ------------------------
     # DO NOT CHANGE
