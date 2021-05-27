@@ -2,7 +2,7 @@
 
 # Getting Started
 ### Essential steps to get your backend service deployed
-A helloworld example has been shipped with the template to show the bare minimum setup - a server that listens on the configured port, a dockerfile, and some kubernetes manifests. (`main.py`, `requirements.txt`, `Dockerfile`, `kubernetes/`)
+A helloworld example has been shipped with the template to show the bare minimum setup - a server that listens on the configured port, a dockerfile, and some kubernetes manifests.
 - Webserver that listens on port <% index .Params `containerPort` %>
 - Dockerfile builds and serves on port <% index .Params `containerPort` %>
 
