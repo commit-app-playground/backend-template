@@ -32,7 +32,7 @@ modules:
       language: python
     # ------------------------
     # DO NOT CHANGE
-    # Templating use, for picking the correct files per language choosen
+    # For Templating base example in different languages
     conditions:
       - action: ignoreFile
         matchField: language
