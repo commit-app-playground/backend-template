@@ -28,3 +28,31 @@ modules:
       containerPort: 80
       # Change this to 'static' if you will be using a static frontend
       frontendSubdomain: spa
+      # Currently supported languages are [python, nodejs, golang]
+      language: python
+    # ------------------------
+    # DO NOT CHANGE
+    # For Templating base example in different languages
+    conditions:
+      - action: ignoreFile
+        matchField: language
+        whenValue: "python"
+        data:
+        - app.js
+        - package.json
+        - main.go
+      - action: ignoreFile
+        matchField: language
+        whenValue: "nodejs"
+        data:
+        - requirements.txt
+        - main.py
+        - main.go
+      - action: ignoreFile
+        matchField: language
+        whenValue: "golang"
+        data:
+        - requirements.txt
+        - main.py
+        - app.js
+        - package.json

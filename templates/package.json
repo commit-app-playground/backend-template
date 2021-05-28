@@ -1,0 +1,11 @@
+{
+  "name": "<% .Name %>",
+  "version": "1.0.0",
+  "description": "A simple http server: hello world",
+  "main": "app.js",
+  "scripts": {
+    "start": "node ."
+  },
+  "author": "",
+  "license": "ISC"
+}
