@@ -26,6 +26,10 @@ spec:
           envFrom:
           - configMapRef:
               name: <% .Name %>-config
+          # Uncomment the secretRef block below if your Playground application has secrets
+          # See the README for instructions on how to create secrets
+          #- secretRef:
+          #    name: <% .Name %>-secrets
           readinessProbe:
             httpGet:
               port: http

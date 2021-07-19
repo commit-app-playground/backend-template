@@ -22,6 +22,15 @@ To set up your local environment with access to AWS and Kubernetes, just run:
 ```
 This script will open a web browser and prompt you to log in with your Commit Gmail account, and then will configure an AWS profile and a Kubernetes context.
 
+# Creating secrets
+
+The Playground uses a somewhat "quick and dirty" way to create secrets for your application without needing to commit them to your GitHub repository. In order to add secrets to your deployment:
+
+1. Rename `secrets/secrets.yml.example` to `secrets.yml` (note that `secrets.yml` has been added to the `.gitignore` file, so they will not be committed to your GitHub repository).
+2. Add secrets to the `stringData` section of your `secrets.yml` file as appropriate. In your deployed application, each secret key will be available as an environment variable.
+3. Run `make upsert-secrets` from the root of your application which will create the secrets object on your Kubernetes cluster server.
+4. That's it! Deploy your application in order for the secrets to be picked up, and you should now be able to access them as environment variables via the defined secret keys.
+
 # Structure
 ## Kubernetes
 The configuration of your application in Kubernetes uses [https://kustomize.io/](kustomize) and is run by the CI pipeline, the configuration is in the [`/kubernetes`](./kubernetes/deploy/) directory.
