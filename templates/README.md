@@ -29,7 +29,8 @@ The Playground uses a somewhat "quick and dirty" way to create secrets for your 
 1. Rename `secrets/secrets.yml.example` to `secrets.yml` (note that `secrets.yml` has been added to the `.gitignore` file, so they will not be committed to your GitHub repository).
 2. Add secrets to the `stringData` section of your `secrets.yml` file as appropriate. In your deployed application, each secret key will be available as an environment variable.
 3. Run `make upsert-secrets` from the root of your application which will create the secrets object on your Kubernetes cluster server.
-4. That's it! Deploy your application in order for the secrets to be picked up, and you should now be able to access them as environment variables via the defined secret keys.
+4. Uncomment the `secretRef` and `name` lines from `kubernetes/deploy/deployment.yml`.
+5. That's it! Deploy your application in order for the secrets to be picked up, and you should now be able to access them as environment variables via the defined secret keys.
 
 # Structure
 ## Kubernetes
